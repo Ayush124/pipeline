@@ -1,0 +1,38 @@
+# build-test.yml
+name: Build and Test
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Build code
+        run: ./build.sh
+  test:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Run tests
+        run: ./test.sh
+
+# deploy.yml
+name: Deploy to Production
+on:
+  push:
+    branches: [ prod ]
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build-test.test
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Deploy code
+        run: ./deploy.sh
